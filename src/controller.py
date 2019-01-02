@@ -18,7 +18,7 @@ import networkx as nx
 
 
 class SimpleController1(app_manager.RyuApp):
-    # Let the Ryu controller running in protocol OpenFlow 1.3 
+    # Let the Ryu controller running in protocol OpenFlow 1.3
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     '''
@@ -46,7 +46,7 @@ class SimpleController1(app_manager.RyuApp):
         # inst     : the instruction that need to be executed
         # mod      : the flow-entry that need to add into the switch
         ofproto = datapath.ofproto
-        parser = datapath.ofproto_parser      
+        parser = datapath.ofproto_parser
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions)]
         mod = parser.OFPFlowMod(
             datapath=datapath,
@@ -59,7 +59,7 @@ class SimpleController1(app_manager.RyuApp):
             cookie=0)
         datapath.send_msg(mod)
 
-        
+
     '''
     METHOD : switch_features_handler (@set_ev_cls)
     Handle the initial feature of each switch
@@ -102,9 +102,26 @@ class SimpleController1(app_manager.RyuApp):
                 priority=3,
                 match=match,
                 actions=actions)
-            # For h2-h1 flow: s3 -> s1 -> h1
+            # For h2-h1 flow: s2 -> s1 -> h1
             match = parser.OFPMatch(
-                in_port=3,
+                in_port=2,
+                eth_type=0x0800,
+                ipv4_src="10.0.0.2",
+                ipv4_dst="10.0.0.1",
+                ip_proto=17,
+                udp_dst=5566)
+            actions = [parser.OFPActionOutput(1)]
+            self.add_flow(
+                datapath=datapath,
+                priority=3,
+                match=match,
+                actions=actions)
+
+        # Add forwarding rule in s2
+        if msg.datapath.id == 2:
+            # For h2-h1 flow: s3 -> s2 -> s1
+            match = parser.OFPMatch(
+                in_port=2,
                 eth_type=0x0800,
                 ipv4_src="10.0.0.2",
                 ipv4_dst="10.0.0.1",
@@ -119,7 +136,7 @@ class SimpleController1(app_manager.RyuApp):
 
         # Add forwarding rule in s3
         if msg.datapath.id == 3:
-            # For h2-h1 flow: h2 -> s3 -> s1
+            # For h2-h1 flow: h2 -> s3 -> s2
             match = parser.OFPMatch(
                 in_port=1,
                 eth_type=0x0800,
@@ -127,7 +144,7 @@ class SimpleController1(app_manager.RyuApp):
                 ipv4_dst="10.0.0.1",
                 ip_proto=17,
                 udp_dst=5566)
-            actions = [parser.OFPActionOutput(2)]
+            actions = [parser.OFPActionOutput(3)]
             self.add_flow(
                 datapath=datapath,
                 priority=3,
@@ -148,7 +165,7 @@ class SimpleController1(app_manager.RyuApp):
                 match=match,
                 actions=actions)
 
-    
+
     '''
     METHOD : packet_in_handler (@set_ev_cls)
     Handle the packet-in events (DO NOT MODIFY)
@@ -159,9 +176,9 @@ class SimpleController1(app_manager.RyuApp):
         datapath = msg.datapath
         ofproto = datapath.ofproto
         in_port = msg.match['in_port']
-        
+
         pkt = packet.Packet(msg.data)
-        
+
         # Get the source and the destination ethernet address
         eth = pkt.get_protocol(ethernet.ethernet)
         eth_dst = eth.dst
@@ -174,9 +191,9 @@ class SimpleController1(app_manager.RyuApp):
             self.net.add_node(eth_src)
             self.net.add_edge(dpid, eth_src, port=in_port)
             self.net.add_edge(eth_src, dpid)
-        
+
         if eth_dst in self.net:
-            path = nx.shortest_path(self.net, eth_src, eth_dst)  
+            path = nx.shortest_path(self.net, eth_src, eth_dst)
             next = path[path.index(dpid) + 1]
             out_port = self.net[dpid][next]['port']
         else:
@@ -208,7 +225,7 @@ class SimpleController1(app_manager.RyuApp):
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
         # Show all switches in the topology
-        switches_list = get_switch(self.topology_api, None)  
+        switches_list = get_switch(self.topology_api, None)
         switches = [switch.dp.id for switch in switches_list]
         self.net.add_nodes_from(switches)
         print('*** List of switches')
