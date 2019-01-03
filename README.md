@@ -139,11 +139,11 @@ result of `SimpleContriller.py`
    
 7. Compare the differences between the iPerf results of `SimpleController.py` and `controller.py` in detail.
 
-   多收到6個ＡＣＫ
+   少收到6個ＡＣＫ
    
 8. Which forwarding rule is better? Why?
 
-    SimpleController的rule比較好，因為收到比較多ack。
+    controller的rule比較好，因為收到比較多ack，loss的％數較少。
 
 ---
 ## References
