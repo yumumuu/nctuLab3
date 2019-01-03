@@ -37,7 +37,7 @@ In this lab, we are going to write a Python program with Ryu SDN framework to bu
     
 > * Show the screenshot of using iPerf command in Mininet (both `SimpleController.py` and `controller.py`)
 
-result of `contriller.py`
+result of `controller.py`
 ![](https://i.imgur.com/Zdq9YnU.jpg)
 result of `SimpleContriller.py`
 ![](https://i.imgur.com/kX0LKFC.jpg)
@@ -143,7 +143,7 @@ result of `SimpleContriller.py`
    
 8. Which forwarding rule is better? Why?
 
-    controller的rule比較好，因為收到比較多ack。
+    SimpleController的rule比較好，因為收到比較多ack。
 
 ---
 ## References
