@@ -18,15 +18,13 @@ In this lab, we are going to write a Python program with Ryu SDN framework to bu
 
 > TODO:
 > * How to run your program?
-
     使用mininet還有Ryu Controller
 > * What is the meaning of the executing command (both Mininet and Ryu controller)?
 
-`mn --custom SimpleTopo.py --topo topo--link tc --controller         remote`
+`mn --custom SimpleTopo.py --topo topo--link tc --controller remote`
     custom:設定路徑
     topo:設定拓墣名稱
     link:對連線條件進行設定 這裡使用tc
-    
     
 `sudo ryu-manager SimpleController.py --observe-links`
     用ryu-manager執行`SimpleController.py`
@@ -137,7 +135,7 @@ result of `SimpleContriller.py`
    
 6. Why need to set "`ip_proto=17`" in the flow entry?
 
-        代表將IP通訊協定設為UDP
+    代表將IP通訊協定設為UDP
    
 7. Compare the differences between the iPerf results of `SimpleController.py` and `controller.py` in detail.
 
